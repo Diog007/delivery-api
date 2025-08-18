@@ -27,7 +27,7 @@ import java.util.List;
 public class SecurityConfig {
 
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
-    // A injeção do OAuth2LoginSuccessHandler foi REMOVIDA pois não será mais usada.
+    // O OAuth2LoginSuccessHandler foi completamente removido daqui.
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
@@ -38,7 +38,7 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                         .requestMatchers(HttpMethod.POST,
-                                "/api/auth/login", // Login do Admin
+                                "/api/auth/login",
                                 "/api/customer/auth/register",
                                 "/api/customer/auth/login",
                                 "/api/customer/auth/forgot-password",
@@ -49,13 +49,12 @@ public class SecurityConfig {
                                 "/api/orders/{id}",
                                 "/images/**"
                         ).permitAll()
-                        // As rotas de OAuth2 foram removidas das permissões explícitas
                         .requestMatchers("/api/admin/**").hasRole("ADMIN")
                         .requestMatchers("/api/customer/**").hasRole("CUSTOMER")
                         .requestMatchers(HttpMethod.POST, "/api/orders").hasRole("CUSTOMER")
                         .anyRequest().authenticated()
                 )
-                // O BLOCO .oauth2Login() FOI COMPLETAMENTE REMOVIDO DAQUI.
+                // O .oauth2Login() não existe mais aqui.
                 .headers(headers -> headers.frameOptions(headersConfig -> headersConfig.sameOrigin()))
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
 
@@ -75,7 +74,7 @@ public class SecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOrigins(List.of("http://localhost:8080")); // Se seu front-end rodar em outra URL, adicione aqui
+        configuration.setAllowedOrigins(List.of("http://localhost:8080"));
         configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"));
         configuration.setAllowedHeaders(List.of("Authorization", "Content-Type", "Accept"));
         configuration.setAllowCredentials(true);
