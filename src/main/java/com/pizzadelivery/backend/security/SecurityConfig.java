@@ -1,6 +1,5 @@
 package com.pizzadelivery.backend.security;
 
-// A importação do CustomOAuth2UserService não é mais necessária
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -28,8 +27,7 @@ import java.util.List;
 public class SecurityConfig {
 
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
-    private final OAuth2LoginSuccessHandler oAuth2LoginSuccessHandler;
-    // A injeção do CustomOAuth2UserService foi REMOVIDA
+    // A injeção do OAuth2LoginSuccessHandler foi REMOVIDA pois não será mais usada.
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
@@ -40,23 +38,24 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                         .requestMatchers(HttpMethod.POST,
-                                "/api/auth/login",
+                                "/api/auth/login", // Login do Admin
                                 "/api/customer/auth/register",
                                 "/api/customer/auth/login",
                                 "/api/customer/auth/forgot-password",
                                 "/api/customer/auth/reset-password"
                         ).permitAll()
-                        .requestMatchers(HttpMethod.GET, "/api/menu/**", "/api/orders/{id}", "/images/**").permitAll()
-                        .requestMatchers("/oauth2/**", "/login/oauth2/**").permitAll()
+                        .requestMatchers(HttpMethod.GET,
+                                "/api/menu/**",
+                                "/api/orders/{id}",
+                                "/images/**"
+                        ).permitAll()
+                        // As rotas de OAuth2 foram removidas das permissões explícitas
                         .requestMatchers("/api/admin/**").hasRole("ADMIN")
                         .requestMatchers("/api/customer/**").hasRole("CUSTOMER")
                         .requestMatchers(HttpMethod.POST, "/api/orders").hasRole("CUSTOMER")
                         .anyRequest().authenticated()
                 )
-                // O bloco userInfoEndpoint foi REMOVIDO para simplificar
-                .oauth2Login(oauth2 -> oauth2
-                        .successHandler(oAuth2LoginSuccessHandler)
-                )
+                // O BLOCO .oauth2Login() FOI COMPLETAMENTE REMOVIDO DAQUI.
                 .headers(headers -> headers.frameOptions(headersConfig -> headersConfig.sameOrigin()))
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
 
@@ -76,7 +75,7 @@ public class SecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOrigins(List.of("http://localhost:8080"));
+        configuration.setAllowedOrigins(List.of("http://localhost:8080")); // Se seu front-end rodar em outra URL, adicione aqui
         configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"));
         configuration.setAllowedHeaders(List.of("Authorization", "Content-Type", "Accept"));
         configuration.setAllowCredentials(true);
