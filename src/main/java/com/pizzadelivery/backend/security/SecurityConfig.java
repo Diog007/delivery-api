@@ -44,11 +44,8 @@ public class SecurityConfig {
                                 "/api/customer/auth/forgot-password",
                                 "/api/customer/auth/reset-password"
                         ).permitAll()
-                        .requestMatchers(HttpMethod.GET,
-                                "/api/menu/**",
-                                "/api/orders/{id}",
-                                "/images/**"
-                        ).permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/menu/**", "/api/orders/{id}", "/images/**").permitAll()
+                        .requestMatchers("/oauth2/**", "/login/oauth2/**").permitAll()
                         .requestMatchers("/api/admin/**").hasRole("ADMIN")
                         .requestMatchers("/api/customer/**").hasRole("CUSTOMER")
                         .requestMatchers(HttpMethod.POST, "/api/orders").hasRole("CUSTOMER")
@@ -74,7 +71,7 @@ public class SecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOrigins(List.of("http://localhost:8080", "https://delivery-full.vercel.app"));
+        configuration.setAllowedOrigins(List.of("http://localhost:8080", "https://delivery-full.vercel.app/"));
         configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"));
         configuration.setAllowedHeaders(List.of("Authorization", "Content-Type", "Accept"));
         configuration.setAllowCredentials(true);
