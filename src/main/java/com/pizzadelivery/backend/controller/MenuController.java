@@ -11,7 +11,6 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/menu")
 @RequiredArgsConstructor
-@CrossOrigin(origins = "http://localhost:8080")
 public class MenuController {
 
     private final MenuService menuService;
